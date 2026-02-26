@@ -1,0 +1,46 @@
+{
+  "name": "nft-engine",
+  "version": "1.0.0",
+  "description": "NFT Generator made by Dancharike with WebGL",
+  "license": "MIT",
+  "author": "Dancharike",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack serve --mode=development",
+    "build": "webpack --mode=production",
+    "check": "tsc --noEmit",
+    "server": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+  },
+  "devDependencies": {
+    "child-process": "^1.0.2",
+    "css-loader": "^7.1.2",
+    "fs-extra": "^11.3.2",
+    "html-webpack-plugin": "^5.6.4",
+    "style-loader": "^4.0.0",
+    "typescript": "^5.9.3",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "dependencies": {
+    "@flyover/box2d": "^1.0.1",
+    "three": "^0.181.1",
+    "ts-loader": "^9.5.4"
+  },
+  "build": {
+    "appId": "com.dancharike.nftengine",
+    "productName": "NFTEngine",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    }
+  }
+}
