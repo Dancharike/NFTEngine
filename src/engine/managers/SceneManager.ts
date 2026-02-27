@@ -40,8 +40,8 @@ export class SceneManager
         return true;
     }
 
-    public update(deltaTime: number): void
+    public update(): void
     {
-        if(this._activeScene && this._activeScene.isLoaded) {this._activeScene.update(deltaTime);}
+        if(this._activeScene && this._activeScene.isLoaded) {this._activeScene.update();}
     }
 }

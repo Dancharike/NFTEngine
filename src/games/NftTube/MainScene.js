@@ -19,7 +19,7 @@ class MainScene extends GameScene
 
         this.addGameObject(new TubeObject("Tube"));
         this.addGameObject(new FloaterObject("Floater"));
-        this.addGameObject(new CameraObject("Camera", this));
+        this.addGameObject(new CameraObject("Camera"));
     }
 }
 

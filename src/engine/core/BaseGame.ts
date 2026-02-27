@@ -36,11 +36,11 @@ export abstract class BaseGame implements IMessageHandler
         await this.onGameStart();
     }
 
-    public update(deltaTime: number): void
+    public update(): void
     {
-        this._sceneManager.update(deltaTime);
+        this._sceneManager.update();
 
-        this.onUpdate(deltaTime);
+        this.onUpdate();
     }
 
     public onMessage(message: IMessage): void
@@ -76,6 +76,6 @@ export abstract class BaseGame implements IMessageHandler
     protected abstract registerScenes(): Promise<void>;
     protected abstract onInitialize(): Promise<void>;
     protected abstract onGameStart(): Promise<void>;
-    protected abstract onUpdate(deltaTime: number): Promise<void>;
+    protected abstract onUpdate(): Promise<void>;
     protected abstract onGameMessage(message: IMessage): Promise<void>;
 }

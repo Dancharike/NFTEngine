@@ -1,8 +1,12 @@
 import * as THREE from "three";
 import {Renderer} from "./Renderer";
 import {BaseGame} from "./BaseGame";
-import {InputManager} from "../managers/InputManager";
 import {MessageBus} from "./MessageBus";
+import {ServiceLocator} from "./ServiceLocator";
+import {ServiceKeys} from "../services/ServiceKeys";
+import {TimeService} from "../services/TimeService";
+import {CameraService} from "../services/CameraService";
+import {InputService} from "../services/InputService";
 
 export class Engine
 {
@@ -13,6 +17,10 @@ export class Engine
     private _gameTime: number = 0;
     private _isRunning: boolean = false;
     private _resizeObserver: ResizeObserver;
+
+    private _timeService: TimeService;
+    private _cameraService: CameraService;
+    private _inputService: InputService;
 
     private _messageBus = new MessageBus();
     private _game: BaseGame;
@@ -27,6 +35,18 @@ export class Engine
         this._resizeObserver = new ResizeObserver(() => {
             this.onWindowResize();
         });
+
+        const timeService = new TimeService();
+        const cameraService = new CameraService();
+        const inputService = new InputService();
+
+        ServiceLocator.register(ServiceKeys.TIME, timeService);
+        ServiceLocator.register(ServiceKeys.CAMERA, cameraService);
+        ServiceLocator.register(ServiceKeys.INPUT, inputService);
+        
+        this._timeService = timeService;
+        this._cameraService = cameraService;
+        this._inputService = inputService;
     }
 
     public get messageBus(): MessageBus {return this._messageBus;}
@@ -41,8 +61,6 @@ export class Engine
         const gameAreaHeight = this._gameArea.clientHeight;
         this._aspect = gameAreaWidth / gameAreaHeight;
 
-        InputManager.initialize();
-
         this._viewport.width = gameAreaWidth;
         this._viewport.height = gameAreaHeight;
         this._renderer.onResize(gameAreaWidth, gameAreaHeight);
@@ -50,6 +68,9 @@ export class Engine
         window.addEventListener("resize", this.onWindowResize.bind(this));
 
         await this._game.onStartup(this._aspect);
+
+        this._cameraService.setCamera(this._game.activeCamera);
+
         await this._game.startNew();
 
         this._isRunning = true;
@@ -69,16 +90,18 @@ export class Engine
     {
         if(!this._isRunning) {return;}
 
-        this._game.update(deltaTime);
+        this._timeService.tick(deltaTime);
+        
+        this._game.update();
 
-        InputManager.update();
+        this._inputService.update();
 
         const activeScene = this._game.activeScene;
         const activeCamera = this._game.activeCamera;
 
         if(activeScene && activeScene.isLoaded && activeCamera)
         {
-            this._renderer.render(deltaTime, activeScene.renderScene, activeCamera);
+            this._renderer.render(activeScene.renderScene, activeCamera);
         }
     }
 

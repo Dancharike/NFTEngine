@@ -20,7 +20,7 @@ class FloaterObject extends GameObject
             const mesh = new THREE.LineSegments(edges, mat);
             mesh.position.copy(pos);
 
-            this._scene.add(mesh);
+            this._scene.renderScene.add(mesh);
         }
     }
 }

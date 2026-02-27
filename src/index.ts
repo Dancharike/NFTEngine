@@ -1,6 +1,5 @@
 import "../web/style/game.css";
 import {Engine} from "./engine/core/Engine";
-import {InputManager} from "@engine/managers/InputManager";
 
 import {NftTubeGame} from "./games/NftTube/NftTubeGame";
 
@@ -12,8 +11,6 @@ window.onload = async () => {
 
     try
     {
-        InputManager.initialize();
-
         const game = new NftTubeGame(gameArea);
         const engine = new Engine(canvas, gameArea, game);
 

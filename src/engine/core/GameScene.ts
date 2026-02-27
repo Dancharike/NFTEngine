@@ -31,8 +31,18 @@ export abstract class GameScene
 
         for(const [id, gameObject] of this._gameObjects)
         {
+            gameObject.awake();
+        }
+        
+        for(const [id, gameObject] of this._gameObjects)
+        {
             gameObject.load();
             if(gameObject.mesh) {this._scene.add(gameObject.mesh);}
+        }
+
+        for(const [id, gameObject] of this._gameObjects)
+        {
+            gameObject.start();
         }
 
         this._isLoaded = true;
@@ -59,11 +69,11 @@ export abstract class GameScene
         this._isLoaded = false;
     }
 
-    public update(deltaTime: number): void
+    public update(): void
     {
         for(const [id, gameObject] of this._gameObjects)
         {
-            if(gameObject.isActive) {gameObject.update(deltaTime);}
+            if(gameObject.isActive) {gameObject.update();}
         }
     }
 
@@ -128,7 +138,13 @@ export abstract class GameScene
         
         this._gameObjects.set(gameObject.id, gameObject);
 
-        if(this.isLoaded && gameObject.mesh) {this._scene.add(gameObject.mesh);}
+        if(this.isLoaded)
+        {
+            gameObject.awake();
+            gameObject.load();
+            if(gameObject.mesh) {this._scene.add(gameObject.mesh);}
+            gameObject.start();
+        }
     }
 
     public removeGameObject(id: string): void

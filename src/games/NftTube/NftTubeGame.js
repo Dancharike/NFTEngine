@@ -25,7 +25,7 @@ class NftTubeGame extends BaseGame
         await this.changeScene("main");
     }
 
-    async onUpdate(deltaTime)
+    async onUpdate()
     {
         
     }

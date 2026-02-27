@@ -44,17 +44,41 @@ export abstract class GameObject implements IMessageHandler
     public set rotation(degrees: number) {if(this._mesh) {this._mesh.rotation.z = THREE.MathUtils.degToRad(degrees);}}
     public set depth(value: number)      {if(this._mesh) {this._mesh.renderOrder = value;}}
     public set visible(value: boolean)   {this._isVisible = value; if(this._mesh) {this._mesh.visible = value;}}
-    public set active(value: boolean)    {this._isActive = value;}
+    public set active(value: boolean)    {value ? this.enable() : this.disable();}
     public set scene(value: any)         {this._scene = value;}
 
+    public awake(): void
+    {
+        this.onAwake();
+    }
+
+    public start(): void
+    {
+        this.onStart();
+    }
+
+    public enable(): void
+    {
+        this._isActive = true;
+        if(this._mesh) {this._mesh.visible = true;}
+        this.onEnable();
+    }
+
+    public disable(): void
+    {
+        this._isActive = false;
+        if(this._mesh) {this._mesh.visible = false;}
+        this.onDisable();
+    }
+    
     public load(): void
     {
         this.onLoad();
     }
 
-    public update(deltaTime: number): void
+    public update(): void
     {
-        this.onUpdate(deltaTime);
+        this.onUpdate();
     }
 
     public onMessage(message: IMessage): void
@@ -71,8 +95,12 @@ export abstract class GameObject implements IMessageHandler
         this.onDestroy();
     }
 
+    protected onAwake(): void {}
+    protected onStart(): void {}
+    protected onEnable(): void {}
+    protected onDisable(): void {}
     protected onLoad(): void {}
-    protected onUpdate(deltaTime: number): void {}
+    protected onUpdate(): void {}
     protected onMessageReceive(message: IMessage): void {}
     protected onDestroy(): void {}
 

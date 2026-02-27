@@ -19,7 +19,7 @@ export class Renderer
 
     public get internal(): THREE.WebGLRenderer {return this._internal;}
 
-    public render(deltaTime: number, scene: THREE.Scene, camera: THREE.Camera): void
+    public render(scene: THREE.Scene, camera: THREE.Camera): void
     {
         this._internal.render(scene, camera);
     }
