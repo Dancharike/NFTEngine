@@ -1,8 +1,19 @@
 import * as THREE from "three";
 import {IMessage, IMessageHandler} from "./MessageBus";
 import type {GameScene} from "./GameScene";
+import {IPoolable} from "./ObjectPool";
 
-export abstract class GameObject implements IMessageHandler
+interface IAwakable    {onAwake(): void;}
+interface IStartable   {onStart(): void;}
+interface IEnableable  {onEnable(): void;}
+interface IDisableable {onDisable(): void;}
+interface ILoadable    {onLoad(): void;}
+interface IUpdatable   {onUpdate(): void;}
+interface IDestroyable {onDestroy(): void;}
+interface IResettable  {onReset(): void;}
+interface IMessagable  {onMessageReceive(message: IMessage): void;}
+
+export abstract class GameObject implements IMessageHandler, IPoolable
 {
     protected _name: string;
     protected _id: string;
@@ -49,60 +60,101 @@ export abstract class GameObject implements IMessageHandler
 
     public awake(): void
     {
-        this.onAwake();
+        if((this as unknown as IAwakable).onAwake)
+        {
+            (this as unknown as IAwakable).onAwake();
+        }
     }
 
     public start(): void
     {
-        this.onStart();
+        if((this as unknown as IStartable).onStart)
+        {
+            (this as unknown as IStartable).onStart();
+        }
     }
 
     public enable(): void
     {
         this._isActive = true;
         if(this._mesh) {this._mesh.visible = true;}
-        this.onEnable();
+        
+        if((this as unknown as IEnableable).onEnable)
+        {
+            (this as unknown as IEnableable).onEnable();
+        }
     }
 
     public disable(): void
     {
         this._isActive = false;
         if(this._mesh) {this._mesh.visible = false;}
-        this.onDisable();
+
+        if((this as unknown as IDisableable).onDisable)
+        {
+            (this as unknown as IDisableable).onDisable();
+        }
     }
     
     public load(): void
     {
-        this.onLoad();
+        if((this as unknown as ILoadable).onLoad)
+        {
+            (this as unknown as ILoadable).onLoad();
+        }
     }
 
     public update(): void
     {
-        this.onUpdate();
+        if((this as unknown as IUpdatable).onUpdate)
+        {
+            (this as unknown as IUpdatable).onUpdate();
+        }
     }
 
     public onMessage(message: IMessage): void
     {
-        this.onMessageReceive(message);
+        if((this as unknown as IMessagable).onMessageReceive)
+        {
+            (this as unknown as IMessagable).onMessageReceive(message);
+        }
     }
 
     public destroy(): void
     {
         if(this._mesh && this._mesh.parent) {this._mesh.parent.remove(this._mesh);}
 
-        if(this._scene) {this._scene.removeGameObject(this._id);}
+        if((this as unknown as IDestroyable).onDestroy)
+        {
+            (this as unknown as IDestroyable).onDestroy();
+        }
 
-        this.onDestroy();
+        this._scene = null;
     }
 
-    protected onAwake(): void {}
-    protected onStart(): void {}
-    protected onEnable(): void {}
-    protected onDisable(): void {}
-    protected onLoad(): void {}
-    protected onUpdate(): void {}
-    protected onMessageReceive(message: IMessage): void {}
-    protected onDestroy(): void {}
+    public destroySelf(): void
+    {
+        if(this._scene) {this._scene.removeGameObject(this._id);}
+        else            {this.destroy();}
+    }
+
+    public activate(): void
+    {
+        this.enable();
+    }
+
+    public deactivate(): void
+    {
+        this.disable();
+    }
+
+    public reset(): void
+    {
+        if((this as unknown as IResettable).onReset)
+        {
+            (this as unknown as IResettable).onReset();
+        }
+    }
 
     public setActive(active: boolean): void
     {

@@ -1,4 +1,4 @@
-import {ServiceLocator} from "./ServiceLocator";
+import {ServiceLocator} from "../core/ServiceLocator";
 import {ServiceKeys} from "../services/ServiceKeys";
 import {ITimeService} from "../services/TimeService";
 

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {ServiceLocator} from "./ServiceLocator";
+import {ServiceLocator} from "../core/ServiceLocator";
 import {ServiceKeys} from "../services/ServiceKeys";
 import {ICameraService} from "../services/CameraService";
 

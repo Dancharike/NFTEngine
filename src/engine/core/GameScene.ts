@@ -152,8 +152,8 @@ export abstract class GameScene
         const gameObject = this._gameObjects.get(id);
         if(gameObject)
         {
-            gameObject.destroy();
             this._gameObjects.delete(id);
+            gameObject.destroy();
         }
     }
 

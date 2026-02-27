@@ -1,7 +1,7 @@
 import "../web/style/game.css";
 import {Engine} from "./engine/core/Engine";
 
-import {NftTubeGame} from "./games/NftTube/NftTubeGame";
+import {NftTubeGame} from "games/NftTube/NftTubeGame";
 
 window.onload = async () => {
     const canvas = document.getElementById("viewport") as HTMLCanvasElement;
@@ -11,7 +11,7 @@ window.onload = async () => {
 
     try
     {
-        const game = new NftTubeGame(gameArea);
+        const game = new NftTubeGame(gameArea, null);
         const engine = new Engine(canvas, gameArea, game);
 
         await engine.start();

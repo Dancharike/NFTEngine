@@ -2,6 +2,10 @@ import * as THREE from "three";
 import {Renderer} from "./Renderer";
 import {BaseGame} from "./BaseGame";
 import {MessageBus} from "./MessageBus";
+import {DebugController} from "../debug/DebugController";
+import {DebugConsole} from "../debug/DebugConsole";
+import {FpsWidget} from "@engine/debug/widgets/FpsWidget";
+import {FpsGraphWidget} from "@engine/debug/widgets/FpsGraphWidget";
 import {ServiceLocator} from "./ServiceLocator";
 import {ServiceKeys} from "../services/ServiceKeys";
 import {TimeService} from "../services/TimeService";
@@ -24,6 +28,11 @@ export class Engine
 
     private _messageBus = new MessageBus();
     private _game: BaseGame;
+    private _fpsLimit: number = 0;
+    private _fpsAccumulator: number = 0;
+    private _lastFrameTime: number = 0;
+    private _fpsWidget: FpsWidget;
+    private _fpsGraph: FpsGraphWidget;
 
     public constructor(canvas: HTMLCanvasElement, gameArea: HTMLDivElement, game: BaseGame)
     {
@@ -47,6 +56,14 @@ export class Engine
         this._timeService = timeService;
         this._cameraService = cameraService;
         this._inputService = inputService;
+
+        const fpsWidget = new FpsWidget();
+        const fpsGraph = new FpsGraphWidget();
+        const debugController = new DebugController(this);
+        new DebugConsole(debugController);
+
+        this._fpsWidget = fpsWidget;
+        this._fpsGraph = fpsGraph;
     }
 
     public get messageBus(): MessageBus {return this._messageBus;}
@@ -85,6 +102,20 @@ export class Engine
         this._resizeObserver.disconnect();
         console.log("Engine stopped");
     }
+    
+    public async restartScene(): Promise<void>
+    {
+        const active = this._game.activeScene;
+        if(!active) {return;}
+
+        await this._game.sceneManager.restartActiveScene();
+    }
+
+    public setFpsLimit(limit: number): void
+    {
+        this._fpsLimit = limit;
+        this._fpsAccumulator = 0;
+    }
 
     private update(deltaTime: number): void
     {
@@ -94,7 +125,8 @@ export class Engine
         
         this._game.update();
 
-        this._inputService.update();
+        this._fpsWidget.update();
+        this._fpsGraph.update();
 
         const activeScene = this._game.activeScene;
         const activeCamera = this._game.activeCamera;
@@ -103,21 +135,52 @@ export class Engine
         {
             this._renderer.render(activeScene.renderScene, activeCamera);
         }
+
+        this._inputService.update();
     }
+
+    /*
+    private loop(gameTime: number): void
+    {
+        if(!this._isRunning) {return;}
+
+        if(this._fpsLimit > 0)
+        {
+            const minInterval = 1000 / this._fpsLimit;
+            if(gameTime - this._lastFrameTime < minInterval)
+            {
+                requestAnimationFrame(this.loop.bind(this));
+                return;
+            }
+        }
+
+        this._lastFrameTime = gameTime;
+        requestAnimationFrame(this.loop.bind(this));
+
+        const delta = (gameTime - this._gameTime) * 0.001;
+        this._gameTime = gameTime;
+        this.update(delta);
+    }
+    */
 
     private loop(gameTime: number): void
     {
         if(!this._isRunning) {return;}
 
-        requestAnimationFrame(this.loop.bind(this));
-
-        let lastTime = this._gameTime;
+        const delta = (gameTime - this._gameTime) * 0.001;
         this._gameTime = gameTime;
 
-        let delta = this._gameTime - lastTime;
-        delta *= 0.001;
-
         this.update(delta);
+
+        if(this._fpsLimit > 0)
+        {
+            const targetInterval = 1000 / this._fpsLimit;
+            setTimeout(() => requestAnimationFrame(this.loop.bind(this)), targetInterval);
+        }
+        else
+        {
+            requestAnimationFrame(this.loop.bind(this));
+        }
     }
 
     private onWindowResize(): void

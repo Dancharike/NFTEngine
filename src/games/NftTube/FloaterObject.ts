@@ -1,10 +1,10 @@
-const THREE = require("three");
-const GameObject = require("@engine/core/GameObject").GameObject;
-const spline = require("./Spline").default;
+import * as THREE from "three";
+import {GameObject} from "@engine/core/GameObject";
+import spline from "./Spline";
 
-class FloaterObject extends GameObject
+export class FloaterObject extends GameObject
 {
-    onLoad()
+    private onLoad(): void
     {
         const boxGeo = new THREE.BoxGeometry(0.075, 0.075, 0.075);
 
@@ -15,7 +15,7 @@ class FloaterObject extends GameObject
 
             const edges = new THREE.EdgesGeometry(boxGeo, 0.2);
             const color = new THREE.Color().setHSL(0.7 - p, 1, 0.5);
-            const mat = new THREE.LineBasicMaterial({ color });
+            const mat = new THREE.LineBasicMaterial({color});
 
             const mesh = new THREE.LineSegments(edges, mat);
             mesh.position.copy(pos);
@@ -24,5 +24,3 @@ class FloaterObject extends GameObject
         }
     }
 }
-
-module.exports = {FloaterObject};

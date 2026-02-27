@@ -44,4 +44,11 @@ export class SceneManager
     {
         if(this._activeScene && this._activeScene.isLoaded) {this._activeScene.update();}
     }
+
+    public async restartActiveScene(): Promise<void>
+    {
+        if(!this.activeScene) {return;}
+        this._activeScene.unload();
+        await this._activeScene.load();
+    }
 }
