@@ -42,6 +42,7 @@ export class GeneralCommandInstaller implements ICommandInstaller
             () =>
             {
                 this._engine.stop();
+                window.close();
                 return "Engine stopped.";
             }
         ));

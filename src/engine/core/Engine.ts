@@ -11,6 +11,7 @@ import {ServiceKeys} from "../services/ServiceKeys";
 import {TimeService} from "../services/TimeService";
 import {CameraService} from "../services/CameraService";
 import {InputService} from "../services/InputService";
+import {AssetManager} from "@engine/managers/AssetManager";
 
 export class Engine
 {
@@ -30,7 +31,7 @@ export class Engine
     private _game: BaseGame;
     private _fpsLimit: number = 0;
     private _fpsAccumulator: number = 0;
-    private _lastFrameTime: number = 0;
+    private _boundLoop = this.loop.bind(this);
     private _fpsWidget: FpsWidget;
     private _fpsGraph: FpsGraphWidget;
 
@@ -56,6 +57,8 @@ export class Engine
         this._timeService = timeService;
         this._cameraService = cameraService;
         this._inputService = inputService;
+
+        AssetManager.initialize();
 
         const fpsWidget = new FpsWidget();
         const fpsGraph = new FpsGraphWidget();
@@ -91,7 +94,8 @@ export class Engine
         await this._game.startNew();
 
         this._isRunning = true;
-        this.loop(0);
+        this._gameTime = performance.now();
+        requestAnimationFrame(this._boundLoop);
 
         console.log("Engine started with aspect:", this._aspect.toFixed(2));
     }
@@ -139,48 +143,31 @@ export class Engine
         this._inputService.update();
     }
 
-    /*
-    private loop(gameTime: number): void
+    private loop(): void
     {
         if(!this._isRunning) {return;}
 
-        if(this._fpsLimit > 0)
-        {
-            const minInterval = 1000 / this._fpsLimit;
-            if(gameTime - this._lastFrameTime < minInterval)
-            {
-                requestAnimationFrame(this.loop.bind(this));
-                return;
-            }
-        }
-
-        this._lastFrameTime = gameTime;
-        requestAnimationFrame(this.loop.bind(this));
-
-        const delta = (gameTime - this._gameTime) * 0.001;
+        const gameTime = performance.now();
+        const delta = Math.min((gameTime - this._gameTime) * 0.001, 0.1);
         this._gameTime = gameTime;
-        this.update(delta);
-    }
-    */
-
-    private loop(gameTime: number): void
-    {
-        if(!this._isRunning) {return;}
-
-        const delta = (gameTime - this._gameTime) * 0.001;
-        this._gameTime = gameTime;
-
-        this.update(delta);
 
         if(this._fpsLimit > 0)
         {
             const targetInterval = 1000 / this._fpsLimit;
-            setTimeout(() => requestAnimationFrame(this.loop.bind(this)), targetInterval);
+            this._fpsAccumulator += delta * 1000;
+
+            if(this._fpsAccumulator < targetInterval)
+            {
+                requestAnimationFrame(this._boundLoop);
+                return;
+            }
+
+            this._fpsAccumulator -= targetInterval;
+            if(this._fpsAccumulator > targetInterval) {this._fpsAccumulator = 0;}
         }
-        else
-        {
-            requestAnimationFrame(this.loop.bind(this));
-        }
+
+        this.update(delta);
+        requestAnimationFrame(this._boundLoop);
     }
 
     private onWindowResize(): void

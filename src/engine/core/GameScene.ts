@@ -172,6 +172,27 @@ export abstract class GameScene
         return null;
     }
 
+    public findByTag(tag: string): GameObject | null
+    {
+        for(const [id, gameObject] of this._gameObjects)
+        {
+            if(gameObject.tag === tag) {return gameObject;}
+        }
+        
+        return null;
+    }
+
+    public findAllByTag(tag: string): GameObject[]
+    {
+        const result: GameObject[] = [];
+        for(const [id, gameObject] of this._gameObjects)
+        {
+            if(gameObject.tag === tag) {result.push(gameObject);}
+        }
+
+        return result;
+    }
+
     public broadcastMessage(message: IMessage): void
     {
         for(const [id, gameObject] of this._gameObjects)

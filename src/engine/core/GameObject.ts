@@ -2,6 +2,7 @@ import * as THREE from "three";
 import {IMessage, IMessageHandler} from "./MessageBus";
 import type {GameScene} from "./GameScene";
 import {IPoolable} from "./ObjectPool";
+import {ComponentManager} from "@engine/managers/ComponentManager";
 
 interface IAwakable    {onAwake(): void;}
 interface IStartable   {onStart(): void;}
@@ -21,18 +22,23 @@ export abstract class GameObject implements IMessageHandler, IPoolable
     protected _isVisible: boolean = true;
     protected _mesh: THREE.Object3D | null = null;
     protected _scene: GameScene | null = null;
+    protected _components: ComponentManager;
+
+    private _tag: string = "";
 
     public constructor(name: string)
     {
         this._name = name;
         this._id = this.generateId();
+        this._components = new ComponentManager(this);
     }
 
-    public get name(): string                {return this._name;}
-    public get id(): string                  {return this._id;}
-    public get isActive(): boolean           {return this._isActive;}
-    public get isVisible(): boolean          {return this._isVisible;}
-    public get mesh(): THREE.Object3D | null {return this._mesh;}
+    public get name(): string                 {return this._name;}
+    public get id(): string                   {return this._id;}
+    public get isActive(): boolean            {return this._isActive;}
+    public get isVisible(): boolean           {return this._isVisible;}
+    public get mesh(): THREE.Object3D | null  {return this._mesh;}
+    public get components(): ComponentManager {return this._components;}
     
     public get x(): number               {return this._mesh?.position.x || 0;}
     public get y(): number               {return this._mesh?.position.y || 0;}
@@ -45,6 +51,7 @@ export abstract class GameObject implements IMessageHandler, IPoolable
     public get visible(): boolean        {return this._isVisible;}
     public get active(): boolean         {return this._isActive;}
     public get scene(): any              {return this._scene;}
+    public get tag(): string             {return this._tag;}
 
     public set x(value: number)          {if(this._mesh) {this._mesh.position.x = value;}}
     public set y(value: number)          {if(this._mesh) {this._mesh.position.y = value;}}
@@ -57,6 +64,7 @@ export abstract class GameObject implements IMessageHandler, IPoolable
     public set visible(value: boolean)   {this._isVisible = value; if(this._mesh) {this._mesh.visible = value;}}
     public set active(value: boolean)    {value ? this.enable() : this.disable();}
     public set scene(value: any)         {this._scene = value;}
+    public set tag(value: string)        {this._tag = value;}
 
     public awake(): void
     {
@@ -106,6 +114,8 @@ export abstract class GameObject implements IMessageHandler, IPoolable
 
     public update(): void
     {
+        this._components.update();
+        
         if((this as unknown as IUpdatable).onUpdate)
         {
             (this as unknown as IUpdatable).onUpdate();
@@ -114,6 +124,8 @@ export abstract class GameObject implements IMessageHandler, IPoolable
 
     public onMessage(message: IMessage): void
     {
+        this._components.broadcastMessage(message);
+        
         if((this as unknown as IMessagable).onMessageReceive)
         {
             (this as unknown as IMessagable).onMessageReceive(message);
@@ -122,6 +134,8 @@ export abstract class GameObject implements IMessageHandler, IPoolable
 
     public destroy(): void
     {
+        this._components.destroyAll();
+        
         if(this._mesh && this._mesh.parent) {this._mesh.parent.remove(this._mesh);}
 
         if((this as unknown as IDestroyable).onDestroy)
