@@ -7,6 +7,11 @@ export class CameraObject extends GameObject
 {
     private _t: number = 0;
 
+    public constructor()
+    {
+        super("Camera");
+    }
+
     private onUpdate(): void
     {
         this._t += Time.deltaTime * 0.1;

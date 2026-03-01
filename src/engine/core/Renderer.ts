@@ -15,6 +15,7 @@ export class Renderer
         this._internal = new THREE.WebGLRenderer(params);
         this._internal.shadowMap.enabled = true;
         this._internal.shadowMap.type = THREE.PCFSoftShadowMap;
+        this._internal.autoClear = false;
     }
 
     public get internal(): THREE.WebGLRenderer {return this._internal;}

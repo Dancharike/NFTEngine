@@ -1,5 +1,5 @@
-import * as THREE from "three";
 import {GameScene} from "@engine/core/GameScene";
+import {Scene} from "@engine/api/Scene";
 import {TubeObject} from "./TubeObject";
 import {FloaterObject} from "./FloaterObject";
 import {CameraObject} from "./CameraObject";
@@ -8,12 +8,12 @@ export class MainScene extends GameScene
 {
     protected async onLoad(): Promise<void>
     {
-        this.renderScene.background = new THREE.Color(0x000000);
-        this.renderScene.fog = new THREE.FogExp2(0x000000, 0.25);
+        Scene.setBackground(this, 0x000000);
+        //Scene.setFog(this, 0x000000, 0.25);
 
-        this.addGameObject(new TubeObject("Tube"));
-        this.addGameObject(new FloaterObject("Floater"));
-        this.addGameObject(new CameraObject("Camera"));
+        this.addGameObject(new TubeObject());
+        this.addGameObject(new FloaterObject());
+        this.addGameObject(new CameraObject());
     }
 
     protected onUnload(): void {}

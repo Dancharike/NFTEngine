@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {Renderer} from "./Renderer";
 import {BaseGame} from "./BaseGame";
+import {UIScene} from "@engine/ui/UIScene";
 import {MessageBus} from "./MessageBus";
 import {DebugController} from "../debug/DebugController";
 import {DebugConsole} from "../debug/DebugConsole";
@@ -23,6 +24,8 @@ export class Engine
     private _isRunning: boolean = false;
     private _resizeObserver: ResizeObserver;
 
+    private _uiScene: UIScene;
+
     private _timeService: TimeService;
     private _cameraService: CameraService;
     private _inputService: InputService;
@@ -40,6 +43,7 @@ export class Engine
         this._viewport = canvas;
         this._gameArea = gameArea;
         this._renderer = new Renderer(canvas);
+        this._uiScene = new UIScene(this._gameArea.clientWidth, this._gameArea.clientHeight);
         this._game = game;
 
         this._resizeObserver = new ResizeObserver(() => {
@@ -70,6 +74,7 @@ export class Engine
     }
 
     public get messageBus(): MessageBus {return this._messageBus;}
+    public get uiScene(): UIScene       {return this._uiScene;}
 
     public async start(): Promise<void>
     {
@@ -89,6 +94,7 @@ export class Engine
 
         await this._game.onStartup(this._aspect);
 
+        this._game.setUIScene(this._uiScene);
         this._cameraService.setCamera(this._game.activeCamera);
 
         await this._game.startNew();
@@ -126,11 +132,12 @@ export class Engine
         if(!this._isRunning) {return;}
 
         this._timeService.tick(deltaTime);
-        
         this._game.update();
 
         this._fpsWidget.update();
         this._fpsGraph.update();
+
+        this._renderer.internal.clear();
 
         const activeScene = this._game.activeScene;
         const activeCamera = this._game.activeCamera;
@@ -139,6 +146,10 @@ export class Engine
         {
             this._renderer.render(activeScene.renderScene, activeCamera);
         }
+
+        this._renderer.internal.clearDepth();
+        this._uiScene.update();
+        this._renderer.render(this._uiScene.scene, this._uiScene.camera);
 
         this._inputService.update();
     }
@@ -187,6 +198,8 @@ export class Engine
                 camera.aspect = gameAreaWidth / gameAreaHeight;
                 camera.updateProjectionMatrix();
             }
+
+            this._uiScene.onResize(gameAreaWidth, gameAreaHeight);
         });
     }
 }

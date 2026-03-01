@@ -1,17 +1,16 @@
-import * as THREE from "three";
 import {GameObject} from "@engine/core/GameObject";
+import {Mesh} from "@engine/api/Mesh";
 import spline from "./Spline";
 
 export class TubeObject extends GameObject
 {
-    private _tube: THREE.TubeGeometry;
-
+    public constructor()
+    {
+        super("Tube");
+    }
+    
     private onLoad(): void
     {
-        const tubeGeo = new THREE.TubeGeometry(spline, 222, 0.65, 16, true);
-        const edges = new THREE.EdgesGeometry(tubeGeo, 0.2);
-        const mat = new THREE.LineBasicMaterial({color: 0xff00ff});
-
-        this._mesh = new THREE.LineSegments(edges, mat);
+        this._mesh = Mesh.createEdgesTube(spline, 222, 0.65, 0xff00ff);
     }
 }

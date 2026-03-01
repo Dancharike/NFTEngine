@@ -1,26 +1,29 @@
-import * as THREE from "three";
 import {GameObject} from "@engine/core/GameObject";
+import {Mesh} from "@engine/api/Mesh";
+import {CubeObject} from "./CubeObject";
 import spline from "./Spline";
 
 export class FloaterObject extends GameObject
 {
+    public constructor()
+    {
+        super("FloaterManager");
+    }
+    
     private onLoad(): void
     {
-        const boxGeo = new THREE.BoxGeometry(0.075, 0.075, 0.075);
-
         for(let i = 0; i < 55; i++)
         {
             const p = (i / 55 + Math.random() * 0.1) % 1;
             const pos = spline.getPointAt(p);
 
-            const edges = new THREE.EdgesGeometry(boxGeo, 0.2);
-            const color = new THREE.Color().setHSL(0.7 - p, 1, 0.5);
-            const mat = new THREE.LineBasicMaterial({color});
+            console.log(`Cube ${i}: p=${p.toFixed(3)} pos=${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`);
+            
+            pos.x += (Math.random() - 0.5) * 0.5;
+            pos.y += (Math.random() - 0.5) * 0.5;
 
-            const mesh = new THREE.LineSegments(edges, mat);
-            mesh.position.copy(pos);
-
-            this._scene.renderScene.add(mesh);
+            const cube = this._scene.instanceCreate(CubeObject, pos.x, pos.y, pos.z);
+            cube.setEdgeColour(Mesh.colourFromHSL(0.7 - p));
         }
     }
 }

@@ -2,13 +2,16 @@ import * as THREE from "three";
 import {IMessage, IMessageHandler, MessageBus} from "./MessageBus";
 import {GameScene} from "./GameScene";
 import {SceneManager} from "@engine/managers/SceneManager";
+import {UIScene} from "@engine/ui/UIScene";
 
 export abstract class BaseGame implements IMessageHandler
 {
     protected _gameArea: HTMLDivElement;
     protected _sceneManager: SceneManager;
+    protected _uiScene: UIScene;
     protected _camera: THREE.Camera;
     protected _isInitialized: boolean = false;
+
 
     public constructor(gameArea: HTMLDivElement, protected _bus: MessageBus)
     {
@@ -17,6 +20,7 @@ export abstract class BaseGame implements IMessageHandler
     }
 
     public get activeScene(): GameScene | null {return this._sceneManager.activeScene;}
+    public get uiScene(): UIScene              {return this._uiScene;}
     public get activeCamera(): THREE.Camera    {return this._camera;}
     public get sceneManager(): SceneManager    {return this._sceneManager;}
     public get isInitialized(): boolean        {return this._isInitialized;}
@@ -53,6 +57,11 @@ export abstract class BaseGame implements IMessageHandler
                 this.onGameMessage(message);
                 break;
         }
+    }
+
+    public setUIScene(uiScene: UIScene): void
+    {
+        this._uiScene = uiScene;
     }
 
     protected async createCamera(aspect: number): Promise<void>
