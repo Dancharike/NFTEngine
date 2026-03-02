@@ -85,9 +85,9 @@ export abstract class GameScene
 
         this.addGameObject(instance);
 
-        instance.x = x;
-        instance.y = y;
-        instance.z = z;
+        (instance as any)._pendingX = x;
+        (instance as any)._pendingY = y;
+        (instance as any)._pendingZ = z;
 
         return instance;
     }

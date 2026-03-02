@@ -10,22 +10,25 @@ export class UIButton extends UIObject
 
     private _label: string = "";
     private _width: number = 320;
-    private _height: number = 160;
+    private _height: number = 80;
     private _bgColour: string = "#ffffff";
     private _textColour: string = "#000000";
     private _hoverColour: string = "#eeeeee";
+    private _fontSize: number = 20;
+    private _font: string = "Consolas";
     private _isHovered: boolean = false;
 
     private _onClick?: () => void;
-    private _raycaster: THREE.Raycaster = new THREE.Raycaster();
 
-    public constructor(label: string, anchor: Anchor = Anchor.MiddleCenter, offsetX: number = 0, offsetY: number = 0)
+    public constructor(label: string, anchor: Anchor = Anchor.MiddleCenter, offsetX: number = 0, offsetY: number = 0, width: number = 320, height: number = 80)
     {
         super();
         this._label = label;
         this._anchor = anchor;
         this._offsetX = offsetX;
         this._offsetY = offsetY;
+        this._width = width;
+        this._height = height;
     }
 
     public onClick(callback: () => void): void
@@ -33,11 +36,13 @@ export class UIButton extends UIObject
         this._onClick = callback;
     }
 
-    public setStyle(bgColour: string, textColour: string, hoverColour: string): void
+    public setStyle(bgColour: string, textColour: string, hoverColour: string, fontSize: number = 20, font: string = "Consolas"): void
     {
         this._bgColour = bgColour;
         this._textColour = textColour;
         this._hoverColour = hoverColour;
+        this._fontSize = fontSize;
+        this._font = font;
         this.redraw();
     }
 
@@ -55,10 +60,10 @@ export class UIButton extends UIObject
             transparent: true,
             depthTest: false,
         });
-        
+
         this._mesh = new THREE.Mesh(geo, mat);
         this._mesh.renderOrder = 999;
-        
+
         this.redraw();
         this.bindEvents();
     }
@@ -86,12 +91,12 @@ export class UIButton extends UIObject
         this._ctx.stroke();
 
         this._ctx.fillStyle = this._textColour;
-        this._ctx.font = `bold 24 Consolas`;
+        this._ctx.font = `bold ${this._fontSize}px ${this._font}`;
         this._ctx.textAlign = "center";
         this._ctx.textBaseline = "middle";
         this._ctx.fillText(this._label, this._width / 2, this._height / 2);
 
-        if(this._texture) {if(this._texture) {this._texture.needsUpdate = true;}}
+        if(this._texture) {this._texture.needsUpdate = true;}
     }
 
     private bindEvents(): void
@@ -120,11 +125,8 @@ export class UIButton extends UIObject
         const worldX = this._mesh.position.x;
         const worldY = this._mesh.position.y;
 
-        const screenW = window.innerWidth;
-        const screenH = window.innerHeight;
-
-        const mx = (clientX / screenW) * screenW - screenW / 2;
-        const my = -(clientY / screenH) * screenH + screenH / 2;
+        const mx = clientX - window.innerWidth / 2;
+        const my = -clientY + window.innerHeight / 2;
 
         return mx >= worldX - hw && mx <= worldX + hw && my >= worldY - hh && my <= worldY + hh;
     }

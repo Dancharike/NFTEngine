@@ -25,6 +25,9 @@ export abstract class GameObject implements IMessageHandler, IPoolable
     protected _components: ComponentManager;
 
     private _tag: string = "";
+    private _pendingX: number = 0;
+    private _pendingY: number = 0;
+    private _pendingZ: number = 0;
 
     public constructor(name: string)
     {
@@ -109,6 +112,11 @@ export abstract class GameObject implements IMessageHandler, IPoolable
         if((this as unknown as ILoadable).onLoad)
         {
             (this as unknown as ILoadable).onLoad();
+        }
+
+        if(this._mesh)
+        {
+            this._mesh.position.set(this._pendingX, this._pendingY, this._pendingZ);
         }
     }
 

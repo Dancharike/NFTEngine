@@ -14,14 +14,17 @@ export class UIText extends UIObject
     private _font: string = "Consolas";
     private _width: number = 320;
     private _height: number = 160;
+    private _align: CanvasTextAlign = "left";
 
-    public constructor(text: string, anchor: Anchor = Anchor.MiddleCenter, offsetX: number = 0, offsetY: number = 0)
+    public constructor(text: string, anchor: Anchor = Anchor.MiddleCenter, offsetX: number = 0, offsetY: number = 0, width: number = 320, height: number = 160)
     {
         super();
         this._text = text;
         this._anchor = anchor;
         this._offsetX = offsetX;
         this._offsetY = offsetY;
+        this._width = width;
+        this._height = height;
     }
 
     public get text(): string {return this._text;}
@@ -32,11 +35,12 @@ export class UIText extends UIObject
         this.redraw();
     }
 
-    public setStyle(fontSize: number, colour: string, font: string = "Consolas"): void
+    public setStyle(fontSize: number, colour: string, font: string = "Consolas", align: CanvasTextAlign = "left"): void
     {
         this._fontSize = fontSize;
         this._colour = colour;
         this._font = font;
+        this._align = align;
         this.redraw();
     }
 
@@ -74,11 +78,24 @@ export class UIText extends UIObject
         if(!this._ctx) {return;}
 
         this._ctx.clearRect(0, 0, this._width, this._height);
+
+        const lines = this._text.split("\n");
+        const lineHeight = this._fontSize * 1.4;
+        const totalHeight = lines.length * lineHeight;
+        const startY = (this._height - totalHeight) / 2 + this._fontSize / 2;
+
+        const xPos = this._align === "center" ? this._width / 2
+                   : this._align === "right"  ? this._width - 8
+                   : 8;
+
         this._ctx.fillStyle = this._colour;
-        this._ctx.font = "${this._fontSize}px ${this._font}";
-        this._ctx.textAlign = "left";
+        this._ctx.font = `${this._fontSize}px ${this._font}`;
+        this._ctx.textAlign = this._align;
         this._ctx.textBaseline = "middle";
-        this._ctx.fillText(this._text, 8, this._height / 2);
+
+        lines.forEach((line, i) => {
+            this._ctx.fillText(line, xPos, startY + i * lineHeight);
+        });
 
         if(this._texture) {this._texture.needsUpdate = true;}
     }
