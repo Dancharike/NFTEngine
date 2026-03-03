@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -33,15 +34,21 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './web/index.html',
       filename: 'index.html'
+    }),
+    new CopyPlugin({
+      patterns: [
+        {from: 'web/mint.html', to: 'mint.html'}
+      ]
     })
   ],
   performance: {
     hints: false,
   },
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
+    static: [
+      {directory: path.join(__dirname, 'dist')},
+      {directory: path.join(__dirname, 'web')}
+    ],
     compress: true,
     port: 8080,
     hot: true

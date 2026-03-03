@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NFT Mint</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0d0d1a;
+            color: #ff00ff;
+            font-family: Consolas, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid #ff00ff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a001a;
+            padding: 12px 16px;
+            border-bottom: 1px solid #ff00ff;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+        img#preview {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: contain;
+            border: 1px solid #ff00ff44;
+            border-radius: 4px;
+            background: #111;
+        }
+
+        .meta {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #ff00ffaa;
+        }
+
+        .meta span { color: #fff; }
+
+        .status {
+            font-size: 12px;
+            color: #ffff00;
+            min-height: 18px;
+            word-break: break-all;
+        }
+
+        .status.ok  { color: #00ff00; }
+        .status.err { color: #ff4444; }
+
+        button {
+            padding: 10px;
+            background: #1a001a;
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover:not(:disabled) { background: #2d002d; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        a.tx-link {
+            display: none;
+            color: #00ffff;
+            font-size: 11px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">⬡ NFT MINT — SEPOLIA TESTNET</div>
+    <div class="body">
+        <img id="preview" alt="NFT Preview"/>
+
+        <div class="meta" id="meta">Loading...</div>
+
+        <div class="status" id="status">Ready to mint</div>
+
+        <button id="btn-connect">Connect MetaMask</button>
+        <button id="btn-mint" disabled>Mint NFT</button>
+
+        <a class="tx-link" id="tx-link" target="_blank">View on Etherscan</a>
+    </div>
+</div>
+
+<script>
+
+const CONFIG = {
+    PINATA_API_KEY:    "7e17c783567bc03b1b3c",
+    PINATA_API_SECRET: "200d3f71d07aa3f02de7d1c4f1bb47a9618a1e16a1dc5a63a614b074a626eb2e",
+    CONTRACT_ADDRESS:  "0xe8977c3381fcbc0956161ca8bfea94b2351f9a8c",
+    CHAIN_ID:          "0xaa36a7",
+};
+
+const ABI = [
+    {
+        "inputs": [
+            {"internalType": "address", "name": "to",       "type": "address"},
+            {"internalType": "string",  "name": "tokenURI", "type": "string"}
+        ],
+        "name": "mint",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+];
+
+let _account   = null;
+let _nftData   = null;
+
+const statusEl  = document.getElementById("status");
+const metaEl    = document.getElementById("meta");
+const previewEl = document.getElementById("preview");
+const btnConnect = document.getElementById("btn-connect");
+const btnMint    = document.getElementById("btn-mint");
+const txLink     = document.getElementById("tx-link");
+
+function init()
+{
+    const raw = localStorage.getItem("nft_mint_payload");
+    if(!raw) { setStatus("No NFT data found. Generate NFT in game first.", "err"); return; }
+
+    _nftData = JSON.parse(raw);
+
+    previewEl.src = _nftData.imageDataURL;
+    metaEl.innerHTML = `
+        ID:          <span>#${_nftData.metadata.id}</span><br>
+        Seed:        <span>${_nftData.metadata.seed}</span><br>
+        Octaves:     <span>${_nftData.metadata.octaves}</span><br>
+        Persistence: <span>${_nftData.metadata.persistence}</span><br>
+        Colour A:    <span style="color:${_nftData.metadata.colourA}">${_nftData.metadata.colourA}</span><br>
+        Colour B:    <span style="color:${_nftData.metadata.colourB}">${_nftData.metadata.colourB}</span>
+    `;
+}
+
+btnConnect.addEventListener("click", async () =>
+{
+    if(!window.ethereum) { setStatus("MetaMask not found. Install it first.", "err"); return; }
+
+    try
+    {
+        const accounts = await window.ethereum.request({method: "eth_requestAccounts"});
+        _account = accounts[0];
+
+        const chainId = await window.ethereum.request({method: "eth_chainId"});
+        if(chainId !== CONFIG.CHAIN_ID)
+        {
+            setStatus("Switch MetaMask to Sepolia testnet!", "err");
+            return;
+        }
+
+        setStatus(`Connected: ${_account.slice(0,6)}...${_account.slice(-4)}`, "ok");
+        btnConnect.disabled = true;
+        btnMint.disabled = false;
+    }
+    catch(e)
+    {
+        setStatus("Connection rejected.", "err");
+    }
+});
+
+btnMint.addEventListener("click", async () =>
+{
+    if(!_nftData || !_account) return;
+
+    btnMint.disabled = true;
+
+    try
+    {
+        setStatus("Uploading image to IPFS...");
+        const imageUrl = await uploadImageToIPFS(_nftData.imageDataURL, `nft_${_nftData.metadata.id}.png`);
+
+        setStatus("Uploading metadata to IPFS...");
+        const metadataJson = {
+            name:        `NFTEngine #${_nftData.metadata.id}`,
+            description: "Generated by NFTEngine",
+            image:       imageUrl,
+            attributes: [
+                {trait_type: "Seed",        value: _nftData.metadata.seed},
+                {trait_type: "Octaves",     value: _nftData.metadata.octaves},
+                {trait_type: "Persistence", value: _nftData.metadata.persistence},
+                {trait_type: "Colour A",    value: _nftData.metadata.colourA},
+                {trait_type: "Colour B",    value: _nftData.metadata.colourB},
+            ]
+        };
+
+        const metadataUrl = await uploadJSONToIPFS(metadataJson, `metadata_${_nftData.metadata.id}.json`);
+
+        setStatus("Waiting for MetaMask confirmation...");
+        const txHash = await mintOnChain(_account, metadataUrl);
+
+        setStatus(`Minted! TX: ${txHash.slice(0,10)}...`, "ok");
+
+        txLink.href = `https://sepolia.etherscan.io/tx/${txHash}`;
+        txLink.style.display = "block";
+        txLink.textContent = `View on Etherscan: ${txHash}`;
+
+        localStorage.setItem("nft_mint_result", JSON.stringify({
+            tokenURI: metadataUrl,
+            txHash,
+            id: _nftData.metadata.id
+        }));
+    }
+    catch(e)
+    {
+        setStatus(`Error: ${e.message}`, "err");
+        btnMint.disabled = false;
+    }
+});
+
+async function uploadImageToIPFS(dataURL, filename)
+{
+    const blob = dataURLtoBlob(dataURL);
+    const form = new FormData();
+    form.append("file", blob, filename);
+    form.append("pinataMetadata", JSON.stringify({name: filename}));
+
+    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+        method: "POST",
+        headers: {
+            "pinata_api_key":        CONFIG.PINATA_API_KEY,
+            "pinata_secret_api_key": CONFIG.PINATA_API_SECRET,
+        },
+        body: form
+    });
+
+    if(!res.ok) throw new Error(`Pinata image upload failed: ${res.statusText}`);
+    const data = await res.json();
+    return `ipfs://${data.IpfsHash}`;
+}
+
+async function uploadJSONToIPFS(json, filename)
+{
+    const res = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+        method: "POST",
+        headers: {
+            "Content-Type":          "application/json",
+            "pinata_api_key":        CONFIG.PINATA_API_KEY,
+            "pinata_secret_api_key": CONFIG.PINATA_API_SECRET,
+        },
+        body: JSON.stringify({
+            pinataMetadata: {name: filename},
+            pinataContent:  json
+        })
+    });
+
+    if(!res.ok) throw new Error(`Pinata JSON upload failed: ${res.statusText}`);
+    const data = await res.json();
+    return `ipfs://${data.IpfsHash}`;
+}
+
+async function mintOnChain(to, tokenURI)
+{
+    const data = encodeMintCall(to, tokenURI);
+
+    const txHash = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [{
+            from: _account,
+            to:   CONFIG.CONTRACT_ADDRESS,
+            data: data,
+        }]
+    });
+
+    return txHash;
+}
+
+function encodeMintCall(to, tokenURI)
+{
+    const selector = "0xd0def521";
+
+    const addressPadded = to.slice(2).padStart(64, "0");
+
+    const strBytes = new TextEncoder().encode(tokenURI);
+    const strOffset = "0000000000000000000000000000000000000000000000000000000000000040";
+    const strLen = strBytes.length.toString(16).padStart(64, "0");
+
+    const strHex = Array.from(strBytes).map(b => b.toString(16).padStart(2, "0")).join("");
+    const padded = strHex.padEnd(Math.ceil(strBytes.length / 32) * 64, "0");
+
+    return selector + addressPadded + strOffset + strLen + padded;
+}
+
+function dataURLtoBlob(dataURL)
+{
+    const [header, data] = dataURL.split(",");
+    const mime = header.match(/:(.*?);/)[1];
+    const binary = atob(data);
+    const arr = new Uint8Array(binary.length);
+    for(let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+    return new Blob([arr], {type: mime});
+}
+
+function setStatus(msg, type = "")
+{
+    statusEl.textContent = msg;
+    statusEl.className   = `status ${type}`;
+}
+
+init();
+</script>
+</body>
+</html>
