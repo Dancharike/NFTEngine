@@ -20,6 +20,13 @@ window.onload = async () => {
     {
         console.error("Failed to start game engine:", error);
     }
+
+    window.addEventListener("keydown", (e) => {
+        if(e.key === "F1") {
+            e.preventDefault();
+            window.open("https://dancharike.github.io/NFTEngine/docs/", "_blank");
+        }
+    });
 };
 
 window.onerror = (message, source, lineno, colno, error) => {
