@@ -2,35 +2,35 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://berestaengine.dev/docs/index.html</loc>
+    <loc>https://dancharike.github.io/NFTEngine/docs/index.html</loc>
     <lastmod>2025-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://berestaengine.dev/docs/getting-started.html</loc>
+    <loc>https://dancharike.github.io/NFTEngine/docs/getting-started.html</loc>
     <lastmod>2025-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://berestaengine.dev/docs/api/gameobject.html</loc>
+    <loc>https://dancharike.github.io/NFTEngine/docs/api/gameobject.html</loc>
     <lastmod>2025-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://berestaengine.dev/docs/api/gamescene.html</loc>
+    <loc>https://dancharike.github.io/NFTEngine/docs/api/gamescene.html</loc>
     <lastmod>2025-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://berestaengine.dev/docs/api/component.html</loc>
+    <loc>https://dancharike.github.io/NFTEngine/docs/api/component.html</loc>
     <lastmod>2025-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
