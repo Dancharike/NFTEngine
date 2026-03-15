@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GameObject API Reference — BerestaEngine Lite</title>
+  <meta name="description" content="Complete API reference for the GameObject class in BerestaEngine Lite. Covers lifecycle methods, properties, components, and usage examples for game entities.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://berestaengine.dev/docs/api/gameobject.html">
+
+  <meta property="og:title" content="GameObject API Reference — BerestaEngine Lite">
+  <meta property="og:description" content="Full documentation for the GameObject base class: lifecycle, properties, methods and components.">
+  <meta property="og:type" content="article">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "GameObject API Reference",
+    "description": "Complete API reference for the GameObject class in BerestaEngine Lite.",
+    "url": "https://berestaengine.dev/docs/api/gameobject.html",
+    "isPartOf": { "@type": "WebSite", "name": "BerestaEngine Lite Docs" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-REPLACE_YOUR_ID"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-REPLACE_YOUR_ID');</script>
+
+  <link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+
+<header class="site-header" role="banner">
+  <button class="hamburger" aria-label="Toggle sidebar" aria-expanded="false">☰</button>
+  <a href="../index.html" class="logo" aria-label="BerestaEngine Lite home">🌿 Beresta<span>Engine</span> Lite</a>
+  <nav class="header-nav" aria-label="Main navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Getting Started</a>
+    <a href="gameobject.html" class="active">API</a>
+  </nav>
+  <div class="header-search" role="search">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="search" placeholder="Search docs…" aria-label="Search documentation">
+  </div>
+</header>
+
+<div class="docs-layout">
+
+  <nav class="sidebar" aria-label="Documentation navigation">
+    <div class="sidebar-section">
+      <h3>Getting Started</h3>
+      <ul>
+        <li><a href="../getting-started.html">Introduction</a></li>
+        <li><a href="../getting-started.html#lifecycle">Object Lifecycle</a></li>
+        <li><a href="../getting-started.html#components">Components</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>API Reference</h3>
+      <ul>
+        <li><a href="gameobject.html" class="active">GameObject</a></li>
+        <li><a href="gamescene.html">GameScene</a></li>
+        <li><a href="component.html">Component</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="docs-content" id="main-content">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <a href="gameobject.html">API Reference</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <span aria-current="page">GameObject</span>
+    </nav>
+
+    <h1>GameObject <span class="tag tag-abstract" style="vertical-align:middle;font-size:.6em">abstract</span></h1>
+    <p>The base class for every entity in BerestaEngine Lite. Extend it to create players, enemies, environments — anything that lives inside a scene.</p>
+
+    <pre><code>import { GameObject } from '@engine/GameObject';
+
+export class MyObject extends GameObject {
+  onLoad(): void { /* create mesh */ }
+  onUpdate(): void { /* game logic */ }
+}</code></pre>
+
+    <!-- Properties -->
+    <h2 id="properties">Properties</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;name: string <em>(readonly)</em></div>
+      <p>The name given to the object at construction. Used for <code>scene.instanceFind()</code> lookups.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;id: string <em>(readonly)</em></div>
+      <p>Auto-generated unique identifier: <code>{name}_{uuid}</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;x / y / z: number</div>
+      <p>World position. Getters/setters delegate directly to <code>mesh.position</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;scaleX / scaleY / scaleZ: number</div>
+      <p>Object scale on each axis.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;rotation: number</div>
+      <p>Z-axis rotation in <strong>degrees</strong>. Internally stored as radians on the Three.js mesh.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;active: boolean</div>
+      <p>When set to <code>false</code>, the object is disabled and hidden. Triggers <code>onDisable()</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;visible: boolean</div>
+      <p>Controls mesh visibility without disabling game logic.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;tag: string</div>
+      <p>Free-form tag for grouping objects. Use with <code>scene.findByTag()</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;components: ComponentManager</div>
+      <p>Access the component manager to add, get, or remove components at runtime.</p>
+    </div>
+
+    <!-- Lifecycle Methods -->
+    <h2 id="lifecycle">Lifecycle Methods</h2>
+    <p>Override these in your subclass — none are mandatory, all are optional.</p>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onAwake(): void</div>
+      <p>Called before any object in the scene is loaded. Safe for internal state init only — <code>mesh</code> is <code>null</code> here.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onLoad(): void</div>
+      <p>Create your <code>this._mesh</code> here. After this returns the mesh is added to the Three.js scene.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onStart(): void</div>
+      <p>All objects in the scene are loaded. Safe to look up other objects via <code>this._scene.instanceFind()</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onUpdate(): void</div>
+      <p>Called every frame while <code>isActive === true</code>. Put movement, input handling and game logic here.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onDestroy(): void</div>
+      <p>Called just before the object is removed from the scene. Release any resources not managed by the engine.</p>
+    </div>
+
+    <!-- Public Methods -->
+    <h2 id="methods">Public Methods</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;destroySelf(): void</div>
+      <p>Removes this object from its scene. Prefer this over calling <code>destroy()</code> directly.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;setActive(active: boolean): void</div>
+      <p>Toggles the active state without triggering enable/disable callbacks. Use <code>active = value</code> if you need callbacks.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;setVisible(visible: boolean): void</div>
+      <p>Sets mesh visibility and syncs the internal <code>_isVisible</code> flag.</p>
+    </div>
+
+    <!-- Example -->
+    <h2 id="example">Full Example</h2>
+    <pre><code>import * as THREE from 'three';
+import { GameObject } from '@engine/GameObject';
+import { TimeService } from '@engine/services/TimeService';
+
+export class BouncingCube extends GameObject {
+  private _speed = 2;
+  private _time  = 0;
+
+  onLoad(): void {
+    this._mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
+    );
+  }
+
+  onUpdate(): void {
+    this._time += TimeService.deltaTime;
+    this.y = Math.sin(this._time * this._speed);
+    this.rotation += 90 * TimeService.deltaTime; // 90°/sec
+  }
+}</code></pre>
+
+    <h2>See Also</h2>
+    <ul>
+      <li><a href="gamescene.html">GameScene — adding and removing objects</a></li>
+      <li><a href="component.html">Component — attaching reusable behaviour</a></li>
+      <li><a href="../getting-started.html#lifecycle">Lifecycle diagram in Getting Started</a></li>
+    </ul>
+
+    <div class="share-bar" aria-label="Share this page">
+      <span>Share:</span>
+      <a class="share-btn" href="https://twitter.com/intent/tweet?text=GameObject+API+BerestaEngine&url=https://berestaengine.dev/docs/api/gameobject.html" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">🐦 Twitter</a>
+      <a class="share-btn" href="https://www.reddit.com/submit?url=https://berestaengine.dev/docs/api/gameobject.html" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">🔴 Reddit</a>
+      <a class="share-btn" id="copy-link" href="#" aria-label="Copy link">🔗 Copy link</a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <span>© 2025 BerestaEngine Lite. MIT License.</span>
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Docs</a>
+    <a href="gameobject.html">API</a>
+    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</footer>
+
+<script src="../docs.js"></script>
+<script>
+  document.getElementById('copy-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(location.href).then(() => {
+      const btn = e.target; btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '🔗 Copy link', 2000);
+    });
+  });
+</script>
+</body>
+</html>

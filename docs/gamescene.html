@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GameScene API Reference — BerestaEngine Lite</title>
+  <meta name="description" content="API reference for GameScene in BerestaEngine Lite. Learn how to manage game objects, load and unload scenes, broadcast messages and use the JS instance API.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://berestaengine.dev/docs/api/gamescene.html">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "GameScene API Reference",
+    "description": "API reference for the GameScene class in BerestaEngine Lite.",
+    "url": "https://berestaengine.dev/docs/api/gamescene.html"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-REPLACE_YOUR_ID"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-REPLACE_YOUR_ID');</script>
+
+  <link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+
+<header class="site-header" role="banner">
+  <button class="hamburger" aria-label="Toggle sidebar" aria-expanded="false">☰</button>
+  <a href="../index.html" class="logo" aria-label="BerestaEngine Lite home">🌿 Beresta<span>Engine</span> Lite</a>
+  <nav class="header-nav" aria-label="Main navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Getting Started</a>
+    <a href="gameobject.html" class="active">API</a>
+  </nav>
+  <div class="header-search" role="search">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="search" placeholder="Search docs…" aria-label="Search documentation">
+  </div>
+</header>
+
+<div class="docs-layout">
+  <nav class="sidebar" aria-label="Documentation navigation">
+    <div class="sidebar-section">
+      <h3>Getting Started</h3>
+      <ul>
+        <li><a href="../getting-started.html">Introduction</a></li>
+        <li><a href="../getting-started.html#lifecycle">Object Lifecycle</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>API Reference</h3>
+      <ul>
+        <li><a href="gameobject.html">GameObject</a></li>
+        <li><a href="gamescene.html" class="active">GameScene</a></li>
+        <li><a href="component.html">Component</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="docs-content" id="main-content">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <a href="gameobject.html">API Reference</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <span aria-current="page">GameScene</span>
+    </nav>
+
+    <h1>GameScene <span class="tag tag-abstract" style="vertical-align:middle;font-size:.6em">abstract</span></h1>
+    <p>A scene owns and manages a collection of <a href="gameobject.html">GameObjects</a>. It controls the Three.js scene graph and the full object lifecycle for everything inside it.</p>
+
+    <pre><code>import { GameScene } from '@engine/GameScene';
+
+export class LevelOne extends GameScene {
+  protected async onLoad(): Promise&lt;void&gt; {
+    this.addGameObject(new Player('player'));
+    this.addGameObject(new Enemy('enemy'));
+  }
+  protected onUnload(): void { /* cleanup */ }
+}</code></pre>
+
+    <h2 id="abstract">Abstract Methods</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-abstract">abstract</span> &nbsp;onLoad(): Promise&lt;void&gt;</div>
+      <p>Implement to populate your scene. Called once when the scene is loaded. <code>async</code> — you can <code>await</code> asset loading here.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-abstract">abstract</span> &nbsp;onUnload(): void</div>
+      <p>Called after all game objects are destroyed. Clean up non-GameObject resources (timers, subscriptions, etc.).</p>
+    </div>
+
+    <h2 id="object-management">Object Management</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;addGameObject(gameObject: GameObject): void</div>
+      <p>Adds an object to the scene. If the scene is already loaded, the object goes through the full awake → load → start pipeline immediately.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;removeGameObject(id: string): void</div>
+      <p>Destroys and removes an object by its ID. Triggers <code>onDestroy()</code> on the object.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;getGameObject(id: string): GameObject | null</div>
+      <p>Direct lookup by ID.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;findGameObjectByName(name: string): GameObject | null</div>
+      <p>Finds the first object whose <code>name</code> matches. Returns <code>null</code> if not found.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;findByTag(tag: string): GameObject | null</div>
+      <p>Finds the first object with a matching tag.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;findAllByTag(tag: string): GameObject[]</div>
+      <p>Returns all objects with a matching tag.</p>
+    </div>
+
+    <h2 id="instance-api">JS Instance API</h2>
+    <p>A GML-style convenience API for quick prototyping:</p>
+
+    <table>
+      <thead><tr><th>Method</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>instanceCreate(Class, x, y, z)</code></td><td>Creates and adds an object at a position</td></tr>
+        <tr><td><code>instanceFind(name)</code></td><td>Alias for <code>findGameObjectByName</code></td></tr>
+        <tr><td><code>instanceFindAll(name)</code></td><td>All objects with given name</td></tr>
+        <tr><td><code>instanceGetAll()</code></td><td>All objects in the scene</td></tr>
+        <tr><td><code>instanceCount(name)</code></td><td>Count of objects with given name</td></tr>
+        <tr><td><code>instanceDestroy(object)</code></td><td>Destroy a specific object</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="messaging">Broadcasting Messages</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;broadcastMessage(message: IMessage): void</div>
+      <p>Sends a message to every game object in the scene. Objects receive it via <code>onMessageReceive(message)</code>.</p>
+    </div>
+
+    <h2>See Also</h2>
+    <ul>
+      <li><a href="gameobject.html">GameObject API</a></li>
+      <li><a href="../getting-started.html#first-scene">Creating your first scene</a></li>
+    </ul>
+
+    <div class="share-bar" aria-label="Share this page">
+      <span>Share:</span>
+      <a class="share-btn" href="https://twitter.com/intent/tweet?text=GameScene+API+BerestaEngine&url=https://berestaengine.dev/docs/api/gamescene.html" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">🐦 Twitter</a>
+      <a class="share-btn" id="copy-link" href="#" aria-label="Copy link">🔗 Copy link</a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <span>© 2025 BerestaEngine Lite. MIT License.</span>
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Docs</a>
+    <a href="gameobject.html">API</a>
+    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</footer>
+
+<script src="../docs.js"></script>
+<script>
+  document.getElementById('copy-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(location.href).then(() => {
+      const btn = e.target; btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '🔗 Copy link', 2000);
+    });
+  });
+</script>
+</body>
+</html>

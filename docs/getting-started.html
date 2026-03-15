@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Getting Started with BerestaEngine Lite — JavaScript Game Engine Tutorial</title>
+  <meta name="description" content="Learn how to set up BerestaEngine Lite, create your first scene, add game objects, and run your first game. Step-by-step tutorial for JavaScript developers.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://berestaengine.dev/docs/getting-started.html">
+
+  <meta property="og:title" content="Getting Started with BerestaEngine Lite">
+  <meta property="og:description" content="Step-by-step guide to creating your first game with BerestaEngine Lite.">
+  <meta property="og:type" content="article">
+
+  <!-- Schema: HowTo -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to create your first game with BerestaEngine Lite",
+    "description": "Step-by-step guide to setting up and building a game with BerestaEngine Lite.",
+    "step": [
+      { "@type": "HowToStep", "name": "Install dependencies",    "text": "Clone the repo and run npm install." },
+      { "@type": "HowToStep", "name": "Create a GameScene",      "text": "Extend GameScene and implement onLoad()." },
+      { "@type": "HowToStep", "name": "Create a GameObject",     "text": "Extend GameObject and set up your mesh in onLoad()." },
+      { "@type": "HowToStep", "name": "Register and run",        "text": "Register the scene in BaseGame and call engine.start()." }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-REPLACE_YOUR_ID"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-REPLACE_YOUR_ID');</script>
+
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+
+<header class="site-header" role="banner">
+  <button class="hamburger" aria-label="Toggle sidebar" aria-expanded="false">☰</button>
+  <a href="index.html" class="logo" aria-label="BerestaEngine Lite home">🌿 Beresta<span>Engine</span> Lite</a>
+  <nav class="header-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html" class="active">Getting Started</a>
+    <a href="api/gameobject.html">API</a>
+  </nav>
+  <div class="header-search" role="search">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="search" placeholder="Search docs…" aria-label="Search documentation">
+  </div>
+</header>
+
+<div class="docs-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar" aria-label="Documentation navigation">
+    <div class="sidebar-section">
+      <h3>Getting Started</h3>
+      <ul>
+        <li><a href="getting-started.html#installation">Installation</a></li>
+        <li><a href="getting-started.html#first-scene">Your First Scene</a></li>
+        <li><a href="getting-started.html#first-object">Your First Object</a></li>
+        <li><a href="getting-started.html#running">Running the Game</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>Core Concepts</h3>
+      <ul>
+        <li><a href="getting-started.html#lifecycle">Object Lifecycle</a></li>
+        <li><a href="getting-started.html#components">Components</a></li>
+        <li><a href="getting-started.html#scenes">Scene Management</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>API Reference</h3>
+      <ul>
+        <li><a href="api/gameobject.html">GameObject</a></li>
+        <li><a href="api/gamescene.html">GameScene</a></li>
+        <li><a href="api/component.html">Component</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ══ CONTENT ══ -->
+  <main class="docs-content" id="main-content">
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <span aria-current="page">Getting Started</span>
+    </nav>
+
+    <h1>Getting Started</h1>
+    <p>This guide walks you through installing BerestaEngine Lite and creating your first game — a rotating cube — in under 10 minutes.</p>
+
+    <div class="cta-group">
+      <a href="https://github.com/your-repo/beresta-engine-lite" class="btn btn-primary" target="_blank" rel="noopener">
+        ⬇️ Download Engine
+      </a>
+      <a href="api/gameobject.html" class="btn btn-secondary">API Reference →</a>
+    </div>
+
+    <!-- Installation -->
+    <h2 id="installation">Installation</h2>
+    <p>BerestaEngine Lite requires <strong>Node.js 18+</strong> and uses webpack for bundling. Clone the repository and install dependencies:</p>
+
+    <pre><code># Clone the repository
+git clone https://github.com/your-repo/beresta-engine-lite.git
+cd beresta-engine-lite
+
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev</code></pre>
+
+    <div class="callout">
+      <strong>Tip:</strong> The engine uses Three.js as its rendering backend.
+      See the <a href="https://threejs.org/docs/" target="_blank" rel="noopener noreferrer">Three.js documentation</a>
+      for advanced rendering features like lights, shadows and post-processing.
+    </div>
+
+    <!-- First Scene -->
+    <h2 id="first-scene">Your First Scene</h2>
+    <p>Every game is made up of one or more <strong>scenes</strong>. A scene manages a collection of game objects and controls loading/unloading. Extend <code>GameScene</code> and implement <code>onLoad()</code>:</p>
+
+    <pre><code>import { GameScene } from '@engine/GameScene';
+import { MyObject } from './MyObject';
+
+export class MyScene extends GameScene {
+
+  protected async onLoad(): Promise&lt;void&gt; {
+    // Add objects to the scene here
+    const obj = new MyObject('player');
+    this.addGameObject(obj);
+  }
+
+  protected onUnload(): void {
+    // Clean up non-GameObject resources here
+  }
+}</code></pre>
+
+    <!-- First Object -->
+    <h2 id="first-object">Your First Game Object</h2>
+    <p>A <strong>game object</strong> is the fundamental entity in BerestaEngine Lite. Extend <code>GameObject</code> and override lifecycle methods:</p>
+
+    <pre><code>import * as THREE from 'three';
+import { GameObject } from '@engine/GameObject';
+
+export class MyObject extends GameObject {
+
+  onLoad(): void {
+    // Create mesh — this is what gets added to the Three.js scene
+    this._mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
+    );
+  }
+
+  onUpdate(): void {
+    // Runs every frame while the object is active
+    this.rotation += 1; // degrees per frame
+  }
+}</code></pre>
+
+    <!-- Object Lifecycle -->
+    <h2 id="lifecycle">Object Lifecycle</h2>
+    <p>Understanding the lifecycle is key to avoiding bugs. Methods are called in this exact order:</p>
+
+    <table>
+      <thead>
+        <tr><th>Method</th><th>When it fires</th><th>Typical use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>onAwake()</code></td><td>Before any object is loaded</td><td>Internal initialisation, no mesh access</td></tr>
+        <tr><td><code>onLoad()</code></td><td>After awake, before start</td><td>Create mesh, load assets</td></tr>
+        <tr><td><code>onStart()</code></td><td>After all objects are loaded</td><td>Cross-object references, initial state</td></tr>
+        <tr><td><code>onEnable()</code></td><td>When object becomes active</td><td>Resume logic, show UI</td></tr>
+        <tr><td><code>onUpdate()</code></td><td>Every frame (if active)</td><td>Game logic, movement, input</td></tr>
+        <tr><td><code>onDisable()</code></td><td>When object becomes inactive</td><td>Pause logic, hide UI</td></tr>
+        <tr><td><code>onDestroy()</code></td><td>Before removal from scene</td><td>Release resources</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <strong>Warning:</strong> Never access <code>this._mesh</code> inside <code>onAwake()</code> — the mesh is not yet created at that point. Use <code>onLoad()</code> or later.
+    </div>
+
+    <!-- Components -->
+    <h2 id="components">Components</h2>
+    <p>Components let you attach reusable behaviour to game objects without inheritance. The engine ships with <code>MeshRenderer</code>, <code>SpriteRenderer</code>, <code>AudioSource</code> and more:</p>
+
+    <pre><code>import { MeshRenderer } from '@engine/components/MeshRenderer';
+
+onLoad(): void {
+  this._mesh = new THREE.Object3D();
+
+  const renderer = this.components.add(MeshRenderer);
+  renderer.setMesh(new THREE.Mesh(geometry, material));
+}</code></pre>
+
+    <!-- Running -->
+    <h2 id="running">Running the Game</h2>
+    <p>Register your scene inside a <code>BaseGame</code> subclass, then boot the engine:</p>
+
+    <pre><code>import { BaseGame } from '@engine/BaseGame';
+import { Engine }   from '@engine/Engine';
+import { MyScene }  from './MyScene';
+
+class MyGame extends BaseGame {
+  protected registerScenes(): void {
+    this.sceneManager.register('main', MyScene);
+    this.sceneManager.loadScene('main');
+  }
+}
+
+const engine = new Engine();
+engine.start(new MyGame());</code></pre>
+
+    <div class="callout success">
+      ✅ Open <code>http://localhost:8080</code> — you should see a rotating blue cube!
+    </div>
+
+    <!-- See also -->
+    <h2>See Also</h2>
+    <ul>
+      <li><a href="api/gameobject.html">GameObject API Reference</a></li>
+      <li><a href="api/gamescene.html">GameScene API Reference</a></li>
+      <li><a href="https://threejs.org/docs/" target="_blank" rel="noopener noreferrer">Three.js Documentation ↗</a></li>
+    </ul>
+
+    <!-- Social Share -->
+    <div class="share-bar" aria-label="Share this page">
+      <span>Share this guide:</span>
+      <a class="share-btn" href="https://twitter.com/intent/tweet?text=Getting+Started+with+BerestaEngine+Lite&url=https://berestaengine.dev/docs/getting-started.html" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">🐦 Twitter</a>
+      <a class="share-btn" href="https://www.reddit.com/submit?url=https://berestaengine.dev/docs/getting-started.html&title=Getting+Started+with+BerestaEngine+Lite" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">🔴 Reddit</a>
+      <a class="share-btn" id="copy-link" href="#" aria-label="Copy link to clipboard">🔗 Copy link</a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <span>© 2025 BerestaEngine Lite. MIT License.</span>
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html">Docs</a>
+    <a href="api/gameobject.html">API</a>
+    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+    <a href="sitemap.xml">Sitemap</a>
+  </nav>
+</footer>
+
+<script src="docs.js"></script>
+<script>
+  // Copy link button
+  document.getElementById('copy-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(location.href).then(() => {
+      const btn = e.target;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '🔗 Copy link', 2000);
+    });
+  });
+</script>
+</body>
+</html>

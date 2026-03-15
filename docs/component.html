@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Component API Reference — BerestaEngine Lite</title>
+  <meta name="description" content="API reference for the Component system in BerestaEngine Lite. Learn how to create, attach, and communicate with reusable components on game objects.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://berestaengine.dev/docs/api/component.html">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "Component API Reference",
+    "url": "https://berestaengine.dev/docs/api/component.html"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-REPLACE_YOUR_ID"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-REPLACE_YOUR_ID');</script>
+
+  <link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+
+<header class="site-header" role="banner">
+  <button class="hamburger" aria-label="Toggle sidebar" aria-expanded="false">☰</button>
+  <a href="../index.html" class="logo" aria-label="BerestaEngine Lite home">🌿 Beresta<span>Engine</span> Lite</a>
+  <nav class="header-nav" aria-label="Main navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Getting Started</a>
+    <a href="gameobject.html" class="active">API</a>
+  </nav>
+  <div class="header-search" role="search">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="search" placeholder="Search docs…" aria-label="Search documentation">
+  </div>
+</header>
+
+<div class="docs-layout">
+  <nav class="sidebar" aria-label="Documentation navigation">
+    <div class="sidebar-section">
+      <h3>Getting Started</h3>
+      <ul>
+        <li><a href="../getting-started.html">Introduction</a></li>
+        <li><a href="../getting-started.html#components">Components</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <h3>API Reference</h3>
+      <ul>
+        <li><a href="gameobject.html">GameObject</a></li>
+        <li><a href="gamescene.html">GameScene</a></li>
+        <li><a href="component.html" class="active">Component</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="docs-content" id="main-content">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <a href="gameobject.html">API Reference</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <span aria-current="page">Component</span>
+    </nav>
+
+    <h1>Component</h1>
+    <p>Components are reusable pieces of behaviour you attach to <a href="gameobject.html">GameObjects</a>. Instead of deep inheritance hierarchies, compose objects from small, focused components — similar to Unity's component model.</p>
+
+    <h2 id="creating">Creating a Component</h2>
+    <pre><code>import { Component }  from '@engine/Component';
+import { GameObject } from '@engine/GameObject';
+
+export class RotatorComponent extends Component {
+  public speed: number = 90; // degrees per second
+
+  public update(): void {
+    this.gameObject.rotation += this.speed * TimeService.deltaTime;
+  }
+}</code></pre>
+
+    <h2 id="attaching">Attaching to a GameObject</h2>
+    <pre><code>// Inside your GameObject subclass:
+onLoad(): void {
+  this._mesh = new THREE.Mesh(geometry, material);
+
+  const rotator = this.components.add(RotatorComponent);
+  rotator.speed = 180;
+}</code></pre>
+
+    <h2 id="api">Component API</h2>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-prop">prop</span> &nbsp;gameObject: GameObject <em>(readonly)</em></div>
+      <p>Reference back to the owning object. Available inside all component methods.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;update(): void</div>
+      <p>Override to run logic every frame. Called by <code>ComponentManager</code> during the owner's <code>update()</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;onMessage(message: IMessage): void</div>
+      <p>Override to receive messages broadcast to the owning object via <code>scene.broadcastMessage()</code>.</p>
+    </div>
+
+    <div class="api-item">
+      <div class="api-sig"><span class="tag tag-method">method</span> &nbsp;destroy(): void</div>
+      <p>Called when the owning object is destroyed. Override to clean up component resources.</p>
+    </div>
+
+    <h2 id="manager">ComponentManager</h2>
+    <p>Every <code>GameObject</code> exposes a <code>components</code> property of type <code>ComponentManager</code>:</p>
+
+    <table>
+      <thead><tr><th>Method</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>add(ComponentClass)</code></td><td>Creates and attaches a component</td></tr>
+        <tr><td><code>get(ComponentClass)</code></td><td>Returns the attached instance or null</td></tr>
+        <tr><td><code>remove(ComponentClass)</code></td><td>Detaches and destroys a component</td></tr>
+        <tr><td><code>has(ComponentClass)</code></td><td>Returns true if attached</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="built-in">Built-in Components</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>MeshRenderer</code></td><td>Renders a Three.js mesh</td></tr>
+        <tr><td><code>SpriteRenderer</code></td><td>Renders a 2D sprite on a plane</td></tr>
+        <tr><td><code>TextureRenderer</code></td><td>Renders a raw texture</td></tr>
+        <tr><td><code>AudioSource</code></td><td>Plays positional audio</td></tr>
+      </tbody>
+    </table>
+
+    <h2>See Also</h2>
+    <ul>
+      <li><a href="gameobject.html">GameObject — components property</a></li>
+      <li><a href="../getting-started.html#components">Components in Getting Started</a></li>
+    </ul>
+
+    <div class="share-bar" aria-label="Share this page">
+      <span>Share:</span>
+      <a class="share-btn" href="https://twitter.com/intent/tweet?text=Component+API+BerestaEngine&url=https://berestaengine.dev/docs/api/component.html" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">🐦 Twitter</a>
+      <a class="share-btn" id="copy-link" href="#" aria-label="Copy link">🔗 Copy link</a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <span>© 2025 BerestaEngine Lite. MIT License.</span>
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="../index.html">Home</a>
+    <a href="../getting-started.html">Docs</a>
+    <a href="gameobject.html">API</a>
+    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</footer>
+
+<script src="../docs.js"></script>
+<script>
+  document.getElementById('copy-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    navigator.clipboard.writeText(location.href).then(() => {
+      const btn = e.target; btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '🔗 Copy link', 2000);
+    });
+  });
+</script>
+</body>
+</html>
