@@ -173,13 +173,13 @@
       <div class="faq-body">
         <p>Extend the <code>GameObject</code> class, implement <code>onLoad()</code> to create your mesh, then add it to a scene:</p>
         <pre><code>class MyObject extends GameObject {
-  onLoad() {
-    this._mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(),
-      new THREE.MeshStandardMaterial()
-    );
-  }
-}</code></pre>
+        onLoad() {
+          this._mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(),
+            new THREE.MeshStandardMaterial()
+          );
+        }
+      }</code></pre>
       </div>
     </details>
 

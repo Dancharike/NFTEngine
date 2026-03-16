@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dancharike.github.io/NFTEngine/docs/sitemap.xml
+Sitemap: https://dancharike.github.io/NFTEngine/sitemap.xml
