@@ -78,13 +78,13 @@
 
     <pre><code>import { GameScene } from '@engine/GameScene';
 
-export class LevelOne extends GameScene {
-  protected async onLoad(): Promise&lt;void&gt; {
-    this.addGameObject(new Player('player'));
-    this.addGameObject(new Enemy('enemy'));
-  }
-  protected onUnload(): void { /* cleanup */ }
-}</code></pre>
+    export class LevelOne extends GameScene {
+      protected async onLoad(): Promise&lt;void&gt; {
+        this.addGameObject(new Player('player'));
+        this.addGameObject(new Enemy('enemy'));
+      }
+      protected onUnload(): void { /* cleanup */ }
+    }</code></pre>
 
     <h2 id="abstract">Abstract Methods</h2>
 
@@ -173,7 +173,7 @@ export class LevelOne extends GameScene {
     <a href="../index.html">Home</a>
     <a href="../getting-started.html">Docs</a>
     <a href="gameobject.html">API</a>
-    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/Dancharike/NFTEngine" target="_blank" rel="noopener">GitHub</a>
   </nav>
 </footer>
 

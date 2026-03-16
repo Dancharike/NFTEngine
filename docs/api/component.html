@@ -77,24 +77,24 @@
 
     <h2 id="creating">Creating a Component</h2>
     <pre><code>import { Component }  from '@engine/Component';
-import { GameObject } from '@engine/GameObject';
+    import { GameObject } from '@engine/GameObject';
 
-export class RotatorComponent extends Component {
-  public speed: number = 90; // degrees per second
+    export class RotatorComponent extends Component {
+      public speed: number = 90; // degrees per second
 
-  public update(): void {
-    this.gameObject.rotation += this.speed * TimeService.deltaTime;
-  }
-}</code></pre>
+      public update(): void {
+        this.gameObject.rotation += this.speed * TimeService.deltaTime;
+      }
+    }</code></pre>
 
     <h2 id="attaching">Attaching to a GameObject</h2>
     <pre><code>// Inside your GameObject subclass:
-onLoad(): void {
-  this._mesh = new THREE.Mesh(geometry, material);
+    onLoad(): void {
+      this._mesh = new THREE.Mesh(geometry, material);
 
-  const rotator = this.components.add(RotatorComponent);
-  rotator.speed = 180;
-}</code></pre>
+      const rotator = this.components.add(RotatorComponent);
+      rotator.speed = 180;
+    }</code></pre>
 
     <h2 id="api">Component API</h2>
 
@@ -163,7 +163,7 @@ onLoad(): void {
     <a href="../index.html">Home</a>
     <a href="../getting-started.html">Docs</a>
     <a href="gameobject.html">API</a>
-    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/Dancharike/NFTEngine" target="_blank" rel="noopener">GitHub</a>
   </nav>
 </footer>
 

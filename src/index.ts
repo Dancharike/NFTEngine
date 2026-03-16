@@ -24,7 +24,7 @@ window.onload = async () => {
     window.addEventListener("keydown", (e) => {
         if(e.key === "F1") {
             e.preventDefault();
-            window.open("https://dancharike.github.io/NFTEngine/docs/", "_blank");
+            window.open("https://dancharike.github.io/NFTEngine/index.html", "_blank");
         }
     });
 };

@@ -85,10 +85,10 @@
 
     <pre><code>import { GameObject } from '@engine/GameObject';
 
-export class MyObject extends GameObject {
-  onLoad(): void { /* create mesh */ }
-  onUpdate(): void { /* game logic */ }
-}</code></pre>
+    export class MyObject extends GameObject {
+      onLoad(): void { /* create mesh */ }
+      onUpdate(): void { /* game logic */ }
+    }</code></pre>
 
     <!-- Properties -->
     <h2 id="properties">Properties</h2>
@@ -188,26 +188,26 @@ export class MyObject extends GameObject {
     <!-- Example -->
     <h2 id="example">Full Example</h2>
     <pre><code>import * as THREE from 'three';
-import { GameObject } from '@engine/GameObject';
-import { TimeService } from '@engine/services/TimeService';
+    import { GameObject } from '@engine/GameObject';
+    import { TimeService } from '@engine/services/TimeService';
 
-export class BouncingCube extends GameObject {
-  private _speed = 2;
-  private _time  = 0;
+    export class BouncingCube extends GameObject {
+      private _speed = 2;
+      private _time  = 0;
 
-  onLoad(): void {
-    this._mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
-    );
-  }
+      onLoad(): void {
+        this._mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 1, 1),
+          new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
+        );
+      }
 
-  onUpdate(): void {
-    this._time += TimeService.deltaTime;
-    this.y = Math.sin(this._time * this._speed);
-    this.rotation += 90 * TimeService.deltaTime; // 90°/sec
-  }
-}</code></pre>
+      onUpdate(): void {
+        this._time += TimeService.deltaTime;
+        this.y = Math.sin(this._time * this._speed);
+        this.rotation += 90 * TimeService.deltaTime; // 90°/sec
+      }
+    }</code></pre>
 
     <h2>See Also</h2>
     <ul>
@@ -232,7 +232,7 @@ export class BouncingCube extends GameObject {
     <a href="../index.html">Home</a>
     <a href="../getting-started.html">Docs</a>
     <a href="gameobject.html">API</a>
-    <a href="https://github.com/your-repo/beresta-engine-lite" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/Dancharike/NFTEngine" target="_blank" rel="noopener">GitHub</a>
   </nav>
 </footer>
 

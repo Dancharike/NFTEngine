@@ -99,7 +99,7 @@
     <p>This guide walks you through installing BerestaEngine Lite and creating your first game — a rotating cube — in under 10 minutes.</p>
 
     <div class="cta-group">
-      <a href="https://github.com/your-repo/beresta-engine-lite" class="btn btn-primary" target="_blank" rel="noopener">
+      <a href="https://github.com/Dancharike/NFTEngine" class="btn btn-primary" target="_blank" rel="noopener">
         ⬇️ Download Engine
       </a>
       <a href="api/gameobject.html" class="btn btn-secondary">API Reference →</a>
@@ -110,14 +110,17 @@
     <p>BerestaEngine Lite requires <strong>Node.js 18+</strong> and uses webpack for bundling. Clone the repository and install dependencies:</p>
 
     <pre><code># Clone the repository
-git clone https://github.com/your-repo/beresta-engine-lite.git
-cd beresta-engine-lite
+    git clone https://github.com/Dancharike/NFTEngine
+    cd beresta-engine-lite
 
-# Install dependencies
-npm install
+    # Install dependencies
+    npm install
 
-# Start dev server
-npm run dev</code></pre>
+    # Build the project
+    npm build
+
+    # Start dev server
+    npm run dev</code></pre>
 
     <div class="callout">
       <strong>Tip:</strong> The engine uses Three.js as its rendering backend.
@@ -130,43 +133,43 @@ npm run dev</code></pre>
     <p>Every game is made up of one or more <strong>scenes</strong>. A scene manages a collection of game objects and controls loading/unloading. Extend <code>GameScene</code> and implement <code>onLoad()</code>:</p>
 
     <pre><code>import { GameScene } from '@engine/GameScene';
-import { MyObject } from './MyObject';
+    import { MyObject } from './MyObject';
 
-export class MyScene extends GameScene {
+    export class MyScene extends GameScene {
 
-  protected async onLoad(): Promise&lt;void&gt; {
-    // Add objects to the scene here
-    const obj = new MyObject('player');
-    this.addGameObject(obj);
-  }
+      protected async onLoad(): Promise&lt;void&gt; {
+        // Add objects to the scene here
+        const obj = new MyObject('player');
+        this.addGameObject(obj);
+      }
 
-  protected onUnload(): void {
-    // Clean up non-GameObject resources here
-  }
-}</code></pre>
+      protected onUnload(): void {
+        // Clean up non-GameObject resources here
+      }
+    }</code></pre>
 
     <!-- First Object -->
     <h2 id="first-object">Your First Game Object</h2>
     <p>A <strong>game object</strong> is the fundamental entity in BerestaEngine Lite. Extend <code>GameObject</code> and override lifecycle methods:</p>
 
     <pre><code>import * as THREE from 'three';
-import { GameObject } from '@engine/GameObject';
+    import { GameObject } from '@engine/GameObject';
 
-export class MyObject extends GameObject {
+    export class MyObject extends GameObject {
 
-  onLoad(): void {
-    // Create mesh — this is what gets added to the Three.js scene
-    this._mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
-    );
-  }
+      onLoad(): void {
+        // Create mesh — this is what gets added to the Three.js scene
+        this._mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 1, 1),
+          new THREE.MeshStandardMaterial({ color: 0x4f8ef7 })
+        );
+      }
 
-  onUpdate(): void {
-    // Runs every frame while the object is active
-    this.rotation += 1; // degrees per frame
-  }
-}</code></pre>
+      onUpdate(): void {
+        // Runs every frame while the object is active
+        this.rotation += 1; // degrees per frame
+      }
+    }</code></pre>
 
     <!-- Object Lifecycle -->
     <h2 id="lifecycle">Object Lifecycle</h2>
@@ -197,30 +200,30 @@ export class MyObject extends GameObject {
 
     <pre><code>import { MeshRenderer } from '@engine/components/MeshRenderer';
 
-onLoad(): void {
-  this._mesh = new THREE.Object3D();
+    onLoad(): void {
+      this._mesh = new THREE.Object3D();
 
-  const renderer = this.components.add(MeshRenderer);
-  renderer.setMesh(new THREE.Mesh(geometry, material));
-}</code></pre>
+      const renderer = this.components.add(MeshRenderer);
+      renderer.setMesh(new THREE.Mesh(geometry, material));
+    }</code></pre>
 
     <!-- Running -->
     <h2 id="running">Running the Game</h2>
     <p>Register your scene inside a <code>BaseGame</code> subclass, then boot the engine:</p>
 
     <pre><code>import { BaseGame } from '@engine/BaseGame';
-import { Engine }   from '@engine/Engine';
-import { MyScene }  from './MyScene';
+    import { Engine }   from '@engine/Engine';
+    import { MyScene }  from './MyScene';
 
-class MyGame extends BaseGame {
-  protected registerScenes(): void {
-    this.sceneManager.register('main', MyScene);
-    this.sceneManager.loadScene('main');
-  }
-}
+    class MyGame extends BaseGame {
+      protected registerScenes(): void {
+        this.sceneManager.register('main', MyScene);
+        this.sceneManager.loadScene('main');
+      }
+    }
 
-const engine = new Engine();
-engine.start(new MyGame());</code></pre>
+    const engine = new Engine();
+    engine.start(new MyGame());</code></pre>
 
     <div class="callout success">
       ✅ Open <code>http://localhost:8080</code> — you should see a rotating blue cube!
@@ -246,7 +249,7 @@ engine.start(new MyGame());</code></pre>
 </div>
 
 <footer class="site-footer" role="contentinfo">
-  <span>© 2025 BerestaEngine Lite. MIT License.</span>
+  <span>© 2026 BerestaEngine Lite. MIT License.</span>
   <nav class="footer-links" aria-label="Footer navigation">
     <a href="index.html">Home</a>
     <a href="getting-started.html">Docs</a>
